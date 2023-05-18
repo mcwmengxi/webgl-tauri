@@ -3,7 +3,7 @@ import { onMounted } from "vue";
 import { createGl, createShaderSource, createProgram, createBuffer } from '@/utils/webgl'
 
 onMounted(()=>{
-  const gl = createGl()
+  const gl = createGl('#true-canvas')
   const vertex_code = `
     attribute vec4 a_position;
     void main() {

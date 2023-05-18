@@ -13,8 +13,16 @@ export const $$ = (str: string) => {
 export const getCanvas = (id: string) => {
   return $$(id);
 }
-export const createGl = () => {
-  const canvasEl = document.querySelector('#true-canvas') as HTMLCanvasElement
+export const randomColor = () => {
+  return {
+    r: Math.random() * 255,
+    g: Math.random() * 255,
+    b: Math.random() * 255,
+    a: Math.random() * 1
+  };
+}
+export const createGl = (id: string) => {
+  const canvasEl = document.querySelector(id) as HTMLCanvasElement
   // 判断浏览器webGL兼容性
   if(!canvasEl.getContext('webgl')&& !canvasEl.getContext('experimental-webgl')) {
     console.log("Your Browser Doesn't Support WebGL");
