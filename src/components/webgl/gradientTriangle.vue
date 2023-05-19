@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { getCanvas, createGl, createShaderSource, createProgram, createBuffer } from '@/utils/webgl'
+import { getCanvas, createGl, createShaderSource, createProgram, createBuffer, randomColor, resizeCanvas } from '@/utils/webgl'
 
 onMounted(()=>{
-  const canvas = getCanvas('#gradient-triangle-canvas')
+  const canvas = getCanvas('#gradient-triangle-canvas') as HTMLCanvasElement
+  // resizeCanvas(canvas);
   const gl = createGl('#gradient-triangle-canvas')
   const vertex_code = `
 		//浮点数设置为中等精度
@@ -41,15 +42,15 @@ onMounted(()=>{
   const vertexShader = createShaderSource(gl, gl.VERTEX_SHADER, vertex_code) as WebGLShader
   const fragmentShader = createShaderSource(gl, gl.FRAGMENT_SHADER, fragment_code) as WebGLShader
 
-  const program = createProgram(gl, vertexShader, fragmentShader)
+  const program = createProgram(gl, vertexShader, fragmentShader) as WebGLProgram
 
-  gengerateDrawParameter(gl, program)
+  // gengerateDrawParameter(gl, program)
   let a_Screen_Size = gl.getAttribLocation(program, 'a_Screen_Size')
   gl.vertexAttrib2f(a_Screen_Size, canvas.width, canvas.height)
   //顶点坐标数组
-  let positions = [];
+  let positions:Array<number> = [];
   //顶点颜色数组
-  let colors = [];
+  let colors:Array<number> = [];
 
   let a_Position = gl.getAttribLocation(program, 'a_Position');
   let a_Color = gl.getAttribLocation(program, 'a_Color');
@@ -58,24 +59,42 @@ onMounted(()=>{
     size : 2
   });
   //创建颜色缓冲区
-  let colorBuffer = createBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(colors), a_Color, {
+  let colorBuffer  = createBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(colors), a_Color, {
     size : 4
   });
-
-  gl.clearColor(.1, 1, 1, 1.0);
-  // gl.clearColor(0, 1, 1, 1) // 设置清空颜色缓冲时的颜色值, 使用完全不透明的黑色清除所有图像
-  gl.clear(gl.COLOR_BUFFER_BIT) // 用上面指定的颜色清空颜色缓冲区，也就是清空画布
-  // 语法 gl.drawArrays(mode, first, count); mode - 指定绘制图元的方式 first - 指定从哪个点开始绘制 count - 指定绘制需要使用到多少个点
-  gl.drawArrays(gl.TRIANGLES, 0, 3)
-  // gl.drawArrays(gl.POINTS, 0, 3)
+  const render = (gl: WebGLRenderingContext) => {
+    gl.clearColor(.1, 1, 1, 1.0);
+    // gl.clearColor(0, 1, 1, 1) // 设置清空颜色缓冲时的颜色值, 使用完全不透明的黑色清除所有图像
+    gl.clear(gl.COLOR_BUFFER_BIT) // 用上面指定的颜色清空颜色缓冲区，也就是清空画布
+    // 语法 gl.drawArrays(mode, first, count); mode - 指定绘制图元的方式 first - 指定从哪个点开始绘制 count - 指定绘制需要使用到多少个点
+    // gl.drawArrays(gl.TRIANGLES, 0, 3)
+    let primitiveType = gl.TRIANGLES;
+    if(positions.length > 0){
+      gl.drawArrays(primitiveType, 0, positions.length / 2);
+    }
+    // gl.drawArrays(gl.POINTS, 0, 3)
+  }
+  render(gl)
 
   canvas.addEventListener('click', e => {
     console.log(e.pageX, e.pageY);
-    
+    positions.push(e.pageX - 2*canvas.offsetTop, e.pageY - canvas.offsetLeft);
+    let color = randomColor();
+		colors.push(color.r, color.g, color.b, color.a);
+    // 顶点信息为6个数据即3个顶点时执行绘制操作，因为三角形由三个顶点组成。
+			if(positions.length % 6 == 0) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
+        //复制颜色信息到缓冲区中。
+				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        render(gl)
+      }
   })
+
 })
 
-const gengerateDrawParameter = (gl: WebGLRenderingContext, program) => {
+const gengerateDrawParameter = (gl: WebGLRenderingContext, program: WebGLProgram) => {
   const color = gl.getUniformLocation(program, 'f_color')
   // 获取 f_color 变量位置
   gl.uniform4f(color, 0.93, 0, 0.56, 1) // 设置它的值

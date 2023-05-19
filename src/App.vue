@@ -10,7 +10,7 @@ import GradientTriangle from "@/components/webgl/gradientTriangle.vue";
   <div class="container">
     <h1>Welcome to Tauri!</h1>
     <!-- <Greet /> -->
-    <Triangle />
+    <!-- <Triangle /> -->
     <GradientTriangle />
   </div>
 </template>

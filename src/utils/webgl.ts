@@ -87,9 +87,10 @@ export const createBuffer = (gl: WebGLRenderingContext, target = gl.ARRAY_BUFFER
   gl.vertexAttribPointer(attribute, size, type || gl.FLOAT, normalize || false, stride || 0, offset || 0)
   // 开启attribute变量，使顶点着色器能够访问缓冲区数据
   gl.enableVertexAttribArray(attribute)
+  return buffer
 }
 
-export const resizeCanvas = (canvas: HTMLCanvasElement, width: number, height: number) => {
+export const resizeCanvas = (canvas: HTMLCanvasElement, width?: number, height?: number) => {
   if (canvas.width !== width) {
     canvas.width = width ? width : window.innerWidth;
   }
