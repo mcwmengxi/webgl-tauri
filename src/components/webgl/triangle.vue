@@ -4,6 +4,8 @@ import { createGl, createShaderSource, createProgram, createBuffer } from '@/uti
 
 onMounted(()=>{
   const gl = createGl('#true-canvas')
+  
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
   const vertex_code = `
     attribute vec4 a_position;
     void main() {

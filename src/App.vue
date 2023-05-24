@@ -3,6 +3,9 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import Greet from "./components/Greet.vue";
 import Triangle from "@/components/webgl/triangle.vue";
+import ThreeTriangle from "@/components/three/triangle.vue";
+import ThreeDimense from "@/components/three/three-dimense.vue";
+
 import GradientTriangle from "@/components/webgl/gradientTriangle.vue";
 </script>
 
@@ -11,7 +14,9 @@ import GradientTriangle from "@/components/webgl/gradientTriangle.vue";
     <h1>Welcome to Tauri!</h1>
     <!-- <Greet /> -->
     <!-- <Triangle /> -->
-    <GradientTriangle />
+    <!-- <ThreeTriangle /> -->
+    <ThreeDimense />
+    <!-- <GradientTriangle /> -->
   </div>
 </template>
 
